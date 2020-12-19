@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements WakeLockListener,
     private GoogleMap mMap;
     private MapView mMapView;
     private int drawId = -1;
+    private int drawnId = -1;
     double[] lastPos = {0,0};
     private Polyline line;
 
@@ -120,29 +121,30 @@ public class MainActivity extends AppCompatActivity implements WakeLockListener,
         List<double[]> pos = fileReadWrite.getPositions();
         if(pos!=null)
         {
+            int id = -1;
             for(double[] entry : pos){
-                int id = (int) entry[0];
-                if(id > drawId)
-                {
-                    drawId = id;
-                    lastPos[0] = entry[1];
-                    lastPos[1] = entry[2];
-                }
-                else if(id == drawId)
-                {
-                    double[] currentPos = {entry[1], entry[2]};
-                    LatLng lastLng = new LatLng(lastPos[0], lastPos[1]);
-                    LatLng currentLng = new LatLng(currentPos[0], currentPos[1]);
-                    PolylineOptions straight = new PolylineOptions().
-                            add(lastLng, currentLng)
-                            .geodesic(false)
-                            .color(Color.RED)
-                            .width(3);
-                    line = mMap.addPolyline(straight);
-                    lastPos[0] = currentPos[0];
-                    lastPos[1] = currentPos[1];
+                id = (int) entry[0];
+                if(drawnId != id) {
+                    if (id > drawId) {
+                        drawId = id;
+                        lastPos[0] = entry[1];
+                        lastPos[1] = entry[2];
+                    } else if (id == drawId) {
+                        double[] currentPos = {entry[1], entry[2]};
+                        LatLng lastLng = new LatLng(lastPos[0], lastPos[1]);
+                        LatLng currentLng = new LatLng(currentPos[0], currentPos[1]);
+                        PolylineOptions straight = new PolylineOptions().
+                                add(lastLng, currentLng)
+                                .geodesic(false)
+                                .color(Color.RED)
+                                .width(3);
+                        line = mMap.addPolyline(straight);
+                        lastPos[0] = currentPos[0];
+                        lastPos[1] = currentPos[1];
+                    }
                 }
             }
+            drawId = id;
         }
     }
 
